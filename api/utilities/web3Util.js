@@ -1,6 +1,7 @@
 const Web3js = require('web3');
 const web3 = new Web3js();
 const MYSQLUtil = require('../utilities/mysqlUtil')
+const cryptoCompareUtil = require('../utilities/cryptoCompareUtil');
 
 var Tx = require("ethereumjs-tx"); 
 
@@ -66,12 +67,14 @@ exports.sendEther =  async function(params){
     let jsonRes = {};
     try{
         const walletTo = await MYSQLUtil.getUserDetailsByEmail(params.email);
-
+        const cryptoValue = await cryptoCompareUtil.cryptoCompare();
         var data = params;
+        var tokenVal = data.amount / cryptoValue.result.USD; 
+        
         var trans = {
             "from" : "0x367B257304E85dA318897336249Cb05354F9107A",
             "to" : walletTo.result[0].PublicAddress,
-            "amount" : parseFloat(data.amount)
+            "amount" : parseFloat(tokenVal)
         }
         var address =  "0x367B257304E85dA318897336249Cb05354F9107A" //currentUSERAdd
         var pass =   "0xC653EF8C37D170ACEAF2EB3A5CE63934422A1223F1CB20E7D587B8D789A61D09" //currentUSERPriv

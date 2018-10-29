@@ -9,5 +9,10 @@ router.post('/exchange', routesController.tranferEther);
 router.post('/walletToWallet', routesController.walletToWalletTransfer);
 router.get('/getEtherBalance/:email', routesController.getEtherBalance);
 router.post('/login', routesController.login);
+//router.post('/createWallet', routesController.createWallet);
+router.get('/paypalToken', routesController.paypalToken);
+router.post('/createPayment', routesController.createPayment);
+router.post('/executePayment', routesController.executePayment);
 
+router.get('/checkUSDTOETHER', routesController.USDTOETHER);
 module.exports = router;

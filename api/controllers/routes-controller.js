@@ -1,7 +1,8 @@
 const mysql = require('mysql');
 const web3Util = require('../utilities/web3Util');
 const MYSQLUtil = require('../utilities/mysqlUtil');
-
+const PayPalUtil = require('../utilities/paypalUtil');
+const cryptoCompareUtil = require('../utilities/cryptoCompareUtil');
 
 const con = mysql.createConnection({
         host: "sl-us-south-1-portal.15.dblayer.com",
@@ -79,6 +80,69 @@ exports.login = async (req, res, next) => {
                                 res.status(401).json({"status" : "error", "message":"Invalid username"});
                         }
                 });
+        }catch(error){
+                res.status(401).json({"status" : "error", "message":error});
+        }
+}
+
+exports.paypalToken = async (req, res, next) => {
+        try{
+                const payPalAuth = await PayPalUtil.requestToken();
+                res.status(200).json(payPalAuth);
+        }catch(error){
+                res.status(401).json({"status" : "error", "message":error});
+        }
+}
+
+exports.createPayment = async (req, res, next) => {
+        try{
+                const token = await PayPalUtil.requestToken();
+                console.log(token.status);
+                if (token.status == "success") {
+                        var params = {
+                                "amount":req.body.amount,
+                                "currency":req.body.currency,
+                                "token":token.result.access_token};
+
+                        const payment = await PayPalUtil.createPayment(params);
+                        res.status(200).json(payment);
+                }else {
+                        res.status(401).json(token); 
+                }
+                
+        }catch(error){
+                res.status(401).json({"status" : "error", "message":error});
+        }
+}
+
+exports.executePayment = async (req, res, next) => {
+        try{
+                const token = await PayPalUtil.requestToken();
+
+                var params = {
+                         "id":req.body.id,
+                        "payerId":req.body.payerId,
+                        "token":token.result.access_token};
+
+                const payment = await PayPalUtil.executePayment(params);
+                res.status(200).json(payment);
+        }catch(error){
+                res.status(401).json({"status" : "error", "message":error});
+        }
+}
+
+exports.USDTOETHER = async (req, res, next) => {
+        try{
+
+                const cryptoValue = await cryptoCompareUtil.cryptoCompare();
+
+                // var params = {
+                //          "id":req.body.id,
+                //         "payerId":req.body.payerId,
+                //         "token":token.result.access_token};
+
+                // const payment = await PayPalUtil.executePayment(params);
+                res.status(200).json(cryptoValue);
         }catch(error){
                 res.status(401).json({"status" : "error", "message":error});
         }

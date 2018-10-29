@@ -6,6 +6,12 @@
         "TOKEN_ADDRESS":"0x8cfac3fbba63edaf45259bf6ae5a052ea1ad202b",
         "CHAIN_ID":"10101010",
         "TOKEN_ADMIN_PUBLIC_ADDRESS":"0x367B257304E85dA318897336249Cb05354F9107A",
-        "TOKEN_ADMIN_PRIVATE_ADDRESS":"0xC653EF8C37D170ACEAF2EB3A5CE63934422A1223F1CB20E7D587B8D789A61D09"
+        "TOKEN_ADMIN_PRIVATE_ADDRESS":"0xC653EF8C37D170ACEAF2EB3A5CE63934422A1223F1CB20E7D587B8D789A61D09",
+        "PAYPAL_ENDPOINT" : "https://api.sandbox.paypal.com/v1/",
+        "PAYPAL_USERNAME" : "Ab9iE6GYYFTNvtAuhHT3rNalmX7mYbv7KiZ49p3k3pzPA6d5rNGuIza7NbMs0gNYrL5L2kgVtoqCXRbP",
+        "PAYPAL_PASSWORD" : "ELWw54YgrIo1dqL5jxtBgVo8Gpx6BJBahkyyX1Z0xSBBS3Wnx4icvLitYY_hqY6dRK8O9DsB3UKkcr3i",
+        "RETURN_URL" : "https://example.com/your_redirect_url.html",
+        "CANCEL_URL" : "https://example.com/your_cancel_url.html",
+        "CRYPTO_COMPARE_URL" : "https://min-api.cryptocompare.com/data/price?fsym=ETH&tsyms=ETH,USD,EUR"
     }
 }
