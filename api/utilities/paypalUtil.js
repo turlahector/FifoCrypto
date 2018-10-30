@@ -104,7 +104,7 @@ exports.executePayment = async function(param) {
     try{
         var options = {
             method: 'POST',  
-            uri:  process.env.PAYPAL_ENDPOINT+'payments/payment/'+params.id+"/execute",
+            uri:  process.env.PAYPAL_ENDPOINT+'payments/payment/'+param.id+"/execute",
             auth: {
                 'bearer': param.token},
             body: {
