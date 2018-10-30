@@ -135,7 +135,7 @@ exports.USDTOETHER = async (req, res, next) => {
         try{
 
                 const cryptoValue = await cryptoCompareUtil.cryptoCompare();
-
+                var ether
                 // var params = {
                 //          "id":req.body.id,
                 //         "payerId":req.body.payerId,
@@ -150,7 +150,7 @@ exports.USDTOETHER = async (req, res, next) => {
 
 exports.getEtherBalance = async (req, res, next) => {
         try{
-                const transaction = await web3Util.getEtherBalance(req.params.email)
+                const transaction = await web3Util.getEtherBalance(req.query.email)
                 res.status(200).json(transaction);
                 
         }catch(error){

@@ -7,7 +7,7 @@ router.post('/createAccount', routesController.createAccount);
 router.get('/getUserDetailsByEmail/:email', routesController.getUserDetailsByEmail);
 router.post('/exchange', routesController.tranferEther);
 router.post('/walletToWallet', routesController.walletToWalletTransfer);
-router.get('/getEtherBalance/:email', routesController.getEtherBalance);
+router.get('/getEtherBalance?:email', routesController.getEtherBalance);
 router.post('/login', routesController.login);
 //router.post('/createWallet', routesController.createWallet);
 router.get('/paypalToken', routesController.paypalToken);
