@@ -40,7 +40,7 @@ exports.createAccount = async (req, res, next) => {
 exports.getUserDetailsByEmail = async (req, res, next) => {
         try{
                 console.log(req.params.email);
-                var sql = await MYSQLUtil.getUserDetailsByEmail(req.params.email) 
+                var sql = await MYSQLUtil.getUserDetailsByEmail(req.query.email) 
                 res.status(200).json(sql);
         }catch(error){
                 res.status(401).json({"result" : "error"});
