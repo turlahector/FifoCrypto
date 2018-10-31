@@ -53,8 +53,8 @@ exports.createPayment = async function(param) {
             body: {
                 "intent": "sale",
                 "redirect_urls": {
-                  "return_url": process.env.RETURN_URL,
-                  "cancel_url": process.env.CANCEL_URL
+                  "return_url": param.successUrl,
+                  "cancel_url": param.cancelUrl
                 },
                 "payer": {
                   "payment_method": "paypal"
