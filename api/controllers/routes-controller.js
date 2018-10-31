@@ -102,6 +102,8 @@ exports.createPayment = async (req, res, next) => {
                         var params = {
                                 "amount":req.body.amount,
                                 "currency":req.body.currency,
+                                "successUrl" : req.body.successUrl,
+                                "cancelUrl" : req.body.cancelUrl,
                                 "token":token.result.access_token};
 
                         const payment = await PayPalUtil.createPayment(params);
