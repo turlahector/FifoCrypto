@@ -153,6 +153,56 @@ exports.walletToWalletTransfer =  async function(params){
     return jsonRes;
 }
 
+//userwallet to admin wallet transfer
+exports.userToAdminTransfer =  async function(params){
+    let jsonRes = {};
+    try{
+        
+        
+        walletFrom = await MYSQLUtil.getUserDetailsByEmail(params.from);
+        console.log("Sender Public Address =======" + walletFrom.result[0].PublicAddress)
+        
+        if (walletFrom.result.length > 0) {
+            var data = params;
+            var trans = {
+                "from" : walletFrom.result[0].PublicAddress,
+                "to" : process.env.TOKEN_ADMIN_PUBLIC_ADDRESS,
+                "amount" : parseFloat(data.amount)
+            }
+            var address =  walletFrom.result[0].PublicAddress //currentUSERAdd
+            var pass =   walletFrom.result[0].PrivateAddress //currentUSERPriv
+
+            
+            var transactionDetails = await web3.eth.accounts.signTransaction({
+                from: address
+                , to: trans.to
+                , value: web3.utils.toWei(trans.amount.toString())
+                ,"gas": 300000,
+                "gasPrice": 300000,
+                data : ""
+            },pass)
+
+            var sendTransaction =  await web3.eth.sendSignedTransaction(transactionDetails.rawTransaction);
+            var trans =  await web3.eth.getTransactionReceipt(sendTransaction.transactionHash)
+            var transactionstr = await web3.eth.getTransaction(trans.transactionHash)
+            jsonRes = {"status": "success", "message": "Successfully Transfered Ether", "result" : transactionstr }
+        } else {
+            jsonRes = {
+                status : "error",
+                message : "Send or Reciever email not found"
+            };   
+        }
+        
+     } catch(err) {
+        jsonRes = {
+            status : "error",
+            message : err.message
+        };   
+     }
+    
+    return jsonRes;
+}
+
 
 exports.getEtherBalance =  async function(params){
     let jsonRes = {};

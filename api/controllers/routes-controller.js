@@ -149,7 +149,22 @@ exports.createPayout = async (req, res, next) => {
                         const payoutExec = await PayPalUtil.executePayouts(paramPayReq);
                         console.log(payoutExec)
                         if(payoutExec.status == "success") {
-                                res.status(200).json(payoutExec);
+                                var paramsTokenTranfer = {from :req.body.from, amount : req.body.value}
+                                const transferToken = await web3Util.userToAdminTransfer(paramsTokenTranfer);
+                                
+                                if (transferToken.status == "success") {
+                                        res.status(200).json({
+                                                status : "sucess",
+                                                message : "Success Payout and Token Transfer",
+                                                result :{
+                                                        paypalPayout :payoutExec.result,
+                                                        ethereumTransaction :transferToken.result
+                                                } 
+                                        });
+                                }else {
+                                        res.status(401).json(transferToken); 
+                                }
+                                
                         }else {
                                 res.status(401).json(payoutExec);
                         }
