@@ -24,17 +24,6 @@ const STANDARD_ERC20_ABI = [{"anonymous": false,"inputs": [{"indexed": true,"nam
 "type": "function"}]
 
 web3.setProvider(new web3.providers.HttpProvider(process.env.ETHEREUM_SERVER));
-//web3.setProvider(new web3.providers.WebsocketProvider("wss://ropsten.infura.io/ws")); //HttpProvider //WebsocketProvider
-
-exports.findTest = function(params) {
-    const user = {
-        firstName : "Jay",
-        lastName : "turla",
-        param : params
-    }
-
-     return user;
-}
 
 exports.createWallet =  async function(){
     let jsonRes = {};
@@ -107,8 +96,19 @@ exports.sendEther =  async function(params){
 exports.walletToWalletTransfer =  async function(params){
     let jsonRes = {};
     try{
-        const walletFrom = await MYSQLUtil.getUserDetailsByEmail(params.from);
-        const walletTo = await MYSQLUtil.getUserDetailsByEmail(params.to);
+        
+        
+        if(this.isValidEmail(params.from)) {
+            walletFrom = await MYSQLUtil.getUserDetailsByEmail(params.from);
+        }else {
+            walletFrom = await MYSQLUtil.getUserDetailsByPublicAddress(params.from);
+        }
+
+        if(this.isValidEmail(params.to)) {
+            walletTo = await MYSQLUtil.getUserDetailsByEmail(params.to);
+        }else {
+            walletTo = await MYSQLUtil.getUserDetailsByPublicAddress(params.to);
+        }
         
         console.log("Sender Public Address =======" + walletFrom.result[0].PublicAddress)
         console.log("Reciever Public Address =======" + walletTo.result[0].PublicAddress)
@@ -179,3 +179,7 @@ exports.getEtherBalance =  async function(params){
     return jsonRes;
 }
 
+exports.isValidEmail = function(email) {
+    var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(String(email).toLowerCase());
+}

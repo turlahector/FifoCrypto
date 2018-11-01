@@ -14,5 +14,7 @@ router.get('/paypalToken', routesController.paypalToken);
 router.post('/createPayment', routesController.createPayment);
 router.post('/executePayment', routesController.executePayment);
 
+router.post('/createPayout', routesController.createPayout);
+
 router.get('/checkUSDTOETHER', routesController.USDTOETHER);
 module.exports = router;

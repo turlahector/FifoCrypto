@@ -23,3 +23,16 @@ exports.getUserDetailsByEmail =  async function(email){
     }
 }
 
+
+exports.getUserDetailsByPublicAddress =  async function(address){
+    var resp = {};
+    try{
+        var sql = "SELECT * FROM user where PublicAddress = '"+address+"'";
+        var sqlres = await query(sql);
+        return resp = {"status": "success" , "message":"User Details", "result" : sqlres};
+        
+    }catch(error){
+        return resp = {"status": "error" , "message":error};
+    }
+}
+

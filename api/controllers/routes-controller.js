@@ -22,8 +22,8 @@ exports.createAccount = async (req, res, next) => {
                 }else {
                         const wallet = await web3Util.createWallet();
                         console.log(wallet.result);
-                        var column = "LastName, FirstName,EmailAddress,PublicAddress,PrivateAddress,password"
-                        var values = "'"+req.body.lastName+"', '"+req.body.firstName+"', '"+req.body.email+"', '"+wallet.result.publicAddress+"', '"+wallet.result.privateAddress+"','"+req.body.password+"'";
+                        var column = "LastName, FirstName,EmailAddress,PublicAddress,PrivateAddress,password,paypalEmail"
+                        var values = "'"+req.body.lastName+"', '"+req.body.firstName+"', '"+req.body.email+"', '"+wallet.result.publicAddress+"', '"+wallet.result.privateAddress+"','"+req.body.password+"','"+req.body.paypalEmail+"'";
                         var sql = "INSERT INTO user ("+column+") VALUES ("+values+")";
 
                         con.query(sql, function (err, result) {
@@ -128,6 +128,36 @@ exports.executePayment = async (req, res, next) => {
 
                 const payment = await PayPalUtil.executePayment(params);
                 res.status(200).json(payment);
+        }catch(error){
+                res.status(401).json({"status" : "error", "message":error});
+        }
+}
+
+exports.createPayout = async (req, res, next) => {
+        try{
+                const token = await PayPalUtil.requestToken();
+
+                var params = {
+                         "value":req.body.value,
+                        "receiver":req.body.receiver,
+                        "token":token.result.access_token};
+
+                const payoutReq = await PayPalUtil.payouts(params);
+                console.log("payoutReq =======" + JSON.stringify(payoutReq.result.batch_header.payout_batch_id));
+                if(payoutReq.status == "success") {
+                        var paramPayReq = {"token":token.result.access_token,payoutBatchId: payoutReq.result.batch_header.payout_batch_id}
+                        const payoutExec = await PayPalUtil.executePayouts(paramPayReq);
+                        console.log(payoutExec)
+                        if(payoutExec.status == "success") {
+                                res.status(200).json(payoutExec);
+                        }else {
+                                res.status(401).json(payoutExec);
+                        }
+    
+                }else {
+                        res.status(401).json(payoutReq);
+                }
+                
         }catch(error){
                 res.status(401).json({"status" : "error", "message":error});
         }
