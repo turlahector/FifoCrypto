@@ -23,6 +23,42 @@ exports.getUserDetailsByEmail =  async function(email){
     }
 }
 
+exports.getWalletByEmail =  async function(email){
+    var resp = {};
+    try{
+        var sql = "SELECT * FROM wallet where email = '"+email+"'";
+        var sqlres = await query(sql);
+        return resp = {"status": "success" , "message":"Wallet Details", "result" : sqlres};
+        
+    }catch(error){
+        return resp = {"status": "error" , "message":error};
+    }
+}
+
+exports.getWalletByEmailAndTypeAndSymbol =  async function(email,walletType,symbol){
+    var resp = {};
+    try{
+        var sql = "SELECT * FROM wallet where email = '"+email+"' && walletType = '"+walletType+"' && symbol = '"+symbol+"'";
+        var sqlres = await query(sql);
+        return resp = {"status": "success" , "message":"Wallet Details", "result" : sqlres};
+        
+    }catch(error){
+        return resp = {"status": "error" , "message":error};
+    }
+}
+
+exports.updateWalletAmountById =  async function(id,amount){
+    var resp = {};
+    try{
+        var sql = "UPDATE wallet set balance = '"+amount+"' where id = "+id+";";
+        var sqlres = await query(sql);
+        return resp = {"status": "success" , "message":"Updated Successfully", "result" : sqlres};
+        
+    }catch(error){
+        return resp = {"status": "error" , "message":error};
+    }
+}
+
 
 exports.getUserDetailsByPublicAddress =  async function(address){
     var resp = {};

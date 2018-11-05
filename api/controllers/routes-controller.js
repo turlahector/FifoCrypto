@@ -37,11 +37,33 @@ exports.createAccount = async (req, res, next) => {
         }
 }
 
+exports.createWallet = async (req, res, next) => {
+        try{
+                var column = "walletType, walletName,symbol,balance,email,publicAddress,privateAddress"
+                var values = "'"+req.body.walletType+"', '"+req.body.walletName+"', '"+req.body.symbol+"', '"+req.body.balance+"', '"+req.body.email+"','"+req.body.publicAddress+"','"+req.body.privateAddress+"'";
+                var sql = "INSERT INTO wallet ("+column+") VALUES ("+values+")";
+
+                con.query(sql, function (err, result) {
+                        if (err) throw err;
+                        res.status(200).json({"status":"success","message":"Successfully Created","result" : result});
+                        console.log("1 wallet record inserted");
+                });
+        }catch(error){
+                res.status(401).json({status : "error" ,"message" : error});
+        }
+}
+
 exports.getUserDetailsByEmail = async (req, res, next) => {
         try{
                 console.log(req.params.email);
-                var sql = await MYSQLUtil.getUserDetailsByEmail(req.query.email) 
-                res.status(200).json(sql);
+                var  sql = await MYSQLUtil.getUserDetailsByEmail(req.query.email) 
+                var otherWallet = await MYSQLUtil.getWalletByEmail(req.query.email) 
+                res.status(200).json({
+                        "status" : "success", 
+                        "message" : "User Details and Wallet Details", 
+                        "result" : {"User" : sql.result,
+                                    "Wallet" : otherWallet.result }
+                        });
         }catch(error){
                 res.status(401).json({"result" : "error"});
         }
@@ -110,6 +132,66 @@ exports.createPayment = async (req, res, next) => {
                         res.status(200).json(payment);
                 }else {
                         res.status(401).json(token); 
+                }
+                
+        }catch(error){
+                res.status(401).json({"status" : "error", "message":error});
+        }
+}
+
+exports.buyViaOtherWallet = async (req, res, next) => {
+        try{
+                const wallet = await MYSQLUtil.getWalletByEmailAndTypeAndSymbol(req.body.email, req.body.walletType, req.body.symbol)
+                const adminWallet = await MYSQLUtil.getWalletByEmailAndTypeAndSymbol("admin@email.com", "MAIN", req.body.symbol)
+                console.log(wallet.result[0])
+                if (wallet.result[0].balance > req.body.amount) {
+                        var params = {email : req.body.email, amount : req.body.amount}
+                        const transaction = await web3Util.sendEther(params)
+
+                        if(transaction.status == "success") {
+                                var finalAmount = parseFloat(wallet.result[0].balance) - parseFloat(req.body.amount); 
+                                var finalAmountAdmin = parseFloat(adminWallet.result[0].balance) + parseFloat(req.body.amount); 
+                                console.log("finalAmount" + finalAmount);
+                                const updatedWallet = await MYSQLUtil.updateWalletAmountById(wallet.result[0].id,finalAmount)
+                                const updatedWalletAdmin = await MYSQLUtil.updateWalletAmountById(adminWallet.result[0].id,finalAmountAdmin)
+                                res.status(200).json(updatedWallet);
+                        } else {
+                                res.status(401).json(transaction);
+                        }
+                }else {
+                        res.status(401).json({"status" : "error", "message":"Insufficient Funds"});  
+                }
+                
+        }catch(error){
+                res.status(401).json({"status" : "error", "message":error});
+        }
+}
+
+exports.sellViaOtherWallet = async (req, res, next) => {
+        try{
+                const wallet = await MYSQLUtil.getWalletByEmailAndTypeAndSymbol(req.body.email, req.body.walletType, req.body.symbol)
+                const adminWallet = await MYSQLUtil.getWalletByEmailAndTypeAndSymbol("admin@email.com", "MAIN", req.body.symbol)
+                console.log(wallet.result[0])
+
+                if(wallet.result.length > 0 ) {
+                        var params = {amount : req.body.amount, from : req.body.email }
+                        const transaction = await web3Util.userToAdminTransfer(params)
+
+                        if (transaction.status == "success") {
+                                const cryptoValue = await cryptoCompareUtil.cryptoCompare();
+                                var usdVal = req.body.amount * cryptoValue.result.USD; 
+                                var finalAmount = parseFloat(wallet.result[0].balance) + parseFloat(usdVal); 
+                                var adminBalance = parseFloat(adminWallet.result[0].balance) - parseFloat(usdVal); 
+                                console.log("finalAmount" + finalAmount)
+                                const updatedWallet = await MYSQLUtil.updateWalletAmountById(wallet.result[0].id,finalAmount);
+                                const updatedWalletAdmin = await MYSQLUtil.updateWalletAmountById(adminWallet.result[0].id,adminBalance);
+                                res.status(200).json(updatedWallet);
+                        }else {
+                                res.status(401).json(transaction)       
+                        }
+                        
+                } else {
+                        res.status(401).json({"status" : "error", "message":"No wallet found"});  
                 }
                 
         }catch(error){
