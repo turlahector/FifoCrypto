@@ -12,6 +12,7 @@
         "PAYPAL_PASSWORD" : "ELWw54YgrIo1dqL5jxtBgVo8Gpx6BJBahkyyX1Z0xSBBS3Wnx4icvLitYY_hqY6dRK8O9DsB3UKkcr3i",
         "RETURN_URL" : "https://example.com/your_redirect_url.html",
         "CANCEL_URL" : "https://example.com/your_cancel_url.html",
-        "CRYPTO_COMPARE_URL" : "https://min-api.cryptocompare.com/data/price?fsym=ETH&tsyms=ETH,USD,EUR"
+        "CRYPTO_COMPARE_ETH_URL" : "https://min-api.cryptocompare.com/data/price?fsym=ETH&tsyms=BTC,USD,EUR",
+        "CRYPTO_COMPARE_BTC_URL" : "https://min-api.cryptocompare.com/data/price?fsym=BTC&tsyms=ETH,USD,EUR"
     }
 }

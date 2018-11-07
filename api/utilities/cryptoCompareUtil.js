@@ -7,7 +7,7 @@ exports.cryptoCompare = async function() {
     try{
         var options = {
             method: 'GET',  
-            uri:  process.env.CRYPTO_COMPARE_URL,
+            uri:  process.env.CRYPTO_COMPARE_ETH_URL,
             json : true 
         };     
         
@@ -22,6 +22,46 @@ exports.cryptoCompare = async function() {
         })
         .catch(function (err) {
             console.log("ERRROR GETTING REQUEST IN CRYPTO COMPARE");
+            jsonRes = {
+                status: "error",
+                message : err.message
+            };
+        });
+    } catch(error) {
+        console.log("ERRROR GETTING REQUEST IN CRYPTO COMPAREl===============" + error);
+        jsonRes = {
+            status: "error",
+            message : error
+        };
+    }
+    
+    
+    return  jsonRes;
+    
+}
+
+
+exports.cryptoCompareBTC = async function() {
+    console.log("START GETTING CRYPTO COMPARE") ;
+    var jsonRes = {};
+    try{
+        var options = {
+            method: 'GET',  
+            uri:  process.env.CRYPTO_COMPARE_URL,
+            json : true 
+        };     
+        
+        await rp(options)
+        .then(function (resp) {
+            console.log("SUCCESS GETTING REQUEST IN CRYPTO COMPARE BTC");
+            jsonRes = {
+                status: "success",
+                message: "Success Getting Crypto Compare",
+                result : resp
+            };
+        })
+        .catch(function (err) {
+            console.log("ERRROR GETTING REQUEST IN CRYPTO COMPARE BTC");
             jsonRes = {
                 status: "error",
                 message : err.message

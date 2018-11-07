@@ -51,7 +51,7 @@ exports.createWallet =  async function(){
 }
 
 
-//exchange ether
+//Admin send ether to user
 exports.sendEther =  async function(params){
     let jsonRes = {};
     try{
@@ -61,20 +61,20 @@ exports.sendEther =  async function(params){
         var tokenVal = data.amount / cryptoValue.result.USD; 
         
         var trans = {
-            "from" : "0x367B257304E85dA318897336249Cb05354F9107A",
+            "from" : "0x367B257304E85dA318897336249Cb05354F9107A", //token admin Public Address
             "to" : walletTo.result[0].PublicAddress,
             "amount" : parseFloat(tokenVal)
         }
-        var address =  "0x367B257304E85dA318897336249Cb05354F9107A" //currentUSERAdd
-        var pass =   "0xC653EF8C37D170ACEAF2EB3A5CE63934422A1223F1CB20E7D587B8D789A61D09" //currentUSERPriv
+        var address =  "0x367B257304E85dA318897336249Cb05354F9107A" //token admin Public Address
+        var pass =   "0xC653EF8C37D170ACEAF2EB3A5CE63934422A1223F1CB20E7D587B8D789A61D09" //token Admin Private Address
 
         
         var transactionDetails = await web3.eth.accounts.signTransaction({
             from: address
             , to: trans.to
             , value: web3.utils.toWei(trans.amount.toString())
-            ,"gas": 300000,
-            "gasPrice": 300000,
+            ,"gas": 300000, //hard coded for testing
+            "gasPrice": 300000, //hard coded for testing
             data : ""
           },pass)
 
@@ -92,7 +92,7 @@ exports.sendEther =  async function(params){
     return jsonRes;
 }
 
-//wallet to wallet transfer
+//wallet to wallet ether transfer
 exports.walletToWalletTransfer =  async function(params){
     let jsonRes = {};
     try{
@@ -111,12 +111,12 @@ exports.walletToWalletTransfer =  async function(params){
         }
         
         console.log("Sender Public Address =======" + walletFrom.result[0].PublicAddress)
-        console.log("Reciever Public Address =======" + walletTo.result[0].PublicAddress)
-        if (walletFrom.result.length > 0 && walletTo.result.length) {
+        
+        if (walletFrom.result.length > 0) {
             var data = params;
             var trans = {
                 "from" : walletFrom.result[0].PublicAddress,
-                "to" : walletTo.result[0].PublicAddress,
+                "to" : walletTo.result.length == 0 ? params.to : walletTo.result[0].PublicAddress,
                 "amount" : parseFloat(data.amount)
             }
             var address =  walletFrom.result[0].PublicAddress //currentUSERAdd
@@ -153,7 +153,7 @@ exports.walletToWalletTransfer =  async function(params){
     return jsonRes;
 }
 
-//userwallet to admin wallet transfer
+//User sell ether to admin (User Transfer ther to admin)
 exports.userToAdminTransfer =  async function(params){
     let jsonRes = {};
     try{
